@@ -1,0 +1,12 @@
+# git ignore file
+src/*/bin/*
+src/*/obj/*
+src/*.user
+src/*/*.user
+src/*/*.Cache
+src/*.suo
+src/packages/*
+src/.vs/*
+src/*.vsp
+src/*.tmp
+src/*.psess
