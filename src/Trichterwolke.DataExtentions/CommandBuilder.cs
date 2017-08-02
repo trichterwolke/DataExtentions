@@ -1,4 +1,11 @@
-﻿namespace Trichterwolke.DataExtentions
+﻿// <summary>
+// Eine Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
+// Methodenaurufs einen optionalen SQL-Ausdruck sowie den dazugehörigen Parameter hinzuzufügen.
+// </summary>
+// <author>Daniel Vogelsang</author>
+// <varsion>1.1.0<version>
+// <modified>2017-08-02</modified>
+namespace Trichterwolke.DataExtentions
 {
     using System;
     using System.Text;
@@ -8,8 +15,8 @@
 
 
     /// <summary>
-    /// Ein Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
-    /// Methodenaufrufs einen optionalen SQL-Ausdruck sowie den dazugehörigen parameter hinzuzufügen.
+    /// Eine Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
+    /// Methodenaurufs einen optionalen SQL-Ausdruck sowie den dazugehörigen Parameter hinzuzufügen.
     /// </summary>
     public class CommandBuilder : IDisposable, IDbCommand
     {
@@ -196,13 +203,10 @@
 
         private void AppendWithParameter<T>(string text, string parameterName, IEnumerable<T> parameterValue, bool append)
         {
-            if (append && text != null && parameterValue != null)
+            if (append && text != null)
             {
-                this.builder.Append(text.Replace(parameterName, string.Join(", ", parameterValue)));
-                var parameter = this.command.CreateParameter();
-                parameter.Value = parameterValue;
-                parameter.ParameterName = parameterName;
-                this.command.Parameters.Add(parameter);
+                string commandText = parameterValue == null || !parameterValue.Any() ? "null" : string.Join(", ", parameterValue);
+                this.builder.Append(text.Replace(parameterName, commandText));
             }
         }
 
