@@ -1,11 +1,17 @@
-﻿namespace Trichterwolke.DataExtentions
+﻿// <summary>
+// Eine Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
+// Methodenaurufs einen optionalen SQL-Ausdruck sowie den dazugehörigen Parameter hinzuzufügen.
+// </summary>
+// <author>Daniel Vogelsang</author>
+// <varsion>1.1.0<version>
+// <modified>2017-08-02</modified>
+namespace Trichterwolke.DataExtentions
 {
     using System;
     using System.Text;
     using System.Data;
-    using System.Linq;
     using System.Collections.Generic;
-
+    using System.Linq;
 
     /// <summary>
     /// Ein Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
@@ -149,7 +155,7 @@
         /// <param name="parameterName">Name des Parameters</param>
         /// <param name="parameterValue">Parameterwert</param>
         /// <param name="append">Gibt an, ob der Parameter und der Text angehängt wird oder nicht.</param>
-        private void AppendWithParameter(string text, string parameterName, IEnumerable<byte> parameterValue, bool append)
+        public void AppendWithParameter(string text, string parameterName, IEnumerable<byte> parameterValue, bool append)
         {
             AppendWithParameter<byte>(text, parameterName, parameterValue, append);
         }
@@ -162,7 +168,7 @@
         /// <param name="parameterName">Name des Parameters</param>
         /// <param name="parameterValue">Parameterwert</param>
         /// <param name="append">Gibt an, ob der Parameter und der Text angehängt wird oder nicht.</param>
-        private void AppendWithParameter(string text, string parameterName, IEnumerable<short> parameterValue, bool append)
+        public void AppendWithParameter(string text, string parameterName, IEnumerable<short> parameterValue, bool append)
         {
             AppendWithParameter<short>(text, parameterName, parameterValue, append);
         }
@@ -175,34 +181,32 @@
         /// <param name="parameterName">Name des Parameters</param>
         /// <param name="parameterValue">Parameterwert</param>
         /// <param name="append">Gibt an, ob der Parameter und der Text angehängt wird oder nicht.</param>
-        private void AppendWithParameter(string text, string parameterName, IEnumerable<int> parameterValue, bool append)
+        public void AppendWithParameter(string text, string parameterName, IEnumerable<int> parameterValue, bool append)
         {
             AppendWithParameter<int>(text, parameterName, parameterValue, append);
         }
 
         /// <summary>        
         /// Wenn append true ist, dann wird der übergebene Text angehängt und der übergebene Parameter
-        /// als kommaseparierte Liste eingefügt.
+        /// als kommaseparierte Liste eingefügt. Falls die Liste leer ist, wird NULL angehängt.
         /// </summary>
         /// <param name="text">Der Text den Angefügt wird.</param>
         /// <param name="parameterName">Name des Parameters</param>
         /// <param name="parameterValue">Parameterwert</param>
         /// <param name="append">Gibt an, ob der Parameter und der Text angehängt wird oder nicht.</param>
-        private void AppendWithParameter(string text, string parameterName, IEnumerable<long> parameterValue, bool append)
+        public void AppendWithParameter(string text, string parameterName, IEnumerable<long> parameterValue, bool append)
         {
             AppendWithParameter<long>(text, parameterName, parameterValue, append);
         }
 
-
         private void AppendWithParameter<T>(string text, string parameterName, IEnumerable<T> parameterValue, bool append)
         {
-            if (append && text != null && parameterValue != null)
+            if (append && text != null)
             {
-                this.builder.Append(text.Replace(parameterName, string.Join(", ", parameterValue)));
-                var parameter = this.command.CreateParameter();
-                parameter.Value = parameterValue;
-                parameter.ParameterName = parameterName;
-                this.command.Parameters.Add(parameter);
+                // Wenn eine leere Liste als Parameter übergeben wird, dann wird an den CommandText „null“ angehängt.
+                // So kann bei leeren Listen der gültige SQL-Ausdruck „WHERE Foo IN(null)“ anstelle von „WHERE Foo IN()“ erzeugt werden.
+                string commandText = parameterValue == null || !parameterValue.Any() ? "NULL" : string.Join(", ", parameterValue);
+                this.builder.Append(text.Replace(parameterName, commandText));
             }
         }
 

@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.Data.SqlClient;
+    using System.Linq;
     using Xunit;
 
     public class CommandBuilderTest
@@ -160,6 +162,24 @@
             var actual = target.Parameters;
 
             Assert.Empty(actual);
+        }
+
+        [Fact]
+        public void AppendParameterPhraseWhenNotNull_list_check_parameter_empty()
+        {
+            var target = new CommandBuilder(new SqlConnection());
+            target.Append(@"SELECT elephant ");
+            target.Append(@"FROM africa ");
+            target.Append(@"WHERE sex = 'male' ");
+
+            target.AppendWithParameterWhenNotNull("AND id in (@idlist)", "@idlist", (Enumerable.Empty<long>()));
+
+            var actualParameter = target.Parameters;
+            var acutalCommandText = target.CommandText;
+            var expectedCommandText = "SELECT elephant FROM africa WHERE sex = 'male' AND id in (null)";
+
+            Assert.Empty(target.Parameters);
+            Assert.Equal(expectedCommandText, acutalCommandText);
         }
     }
 }
