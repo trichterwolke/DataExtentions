@@ -14,8 +14,8 @@ namespace Trichterwolke.DataExtentions
     using System.Linq;
 
     /// <summary>
-    /// Ein Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
-    /// Methodenaufrufs einen optionalen SQL-Ausdruck sowie den dazugehörigen parameter hinzuzufügen.
+    /// Eine Komposition eines StringBuilder- und SqlCommand-Objekts um mittels eines 
+    /// Methodenaurufs einen optionalen SQL-Ausdruck sowie den dazugehörigen Parameter hinzuzufügen.
     /// </summary>
     public class CommandBuilder : IDisposable, IDbCommand
     {
@@ -203,9 +203,13 @@ namespace Trichterwolke.DataExtentions
         {
             if (append && text != null)
             {
+<<<<<<< HEAD
                 // Wenn eine leere Liste als Parameter übergeben wird, dann wird an den CommandText „null“ angehängt.
                 // So kann bei leeren Listen der gültige SQL-Ausdruck „WHERE Foo IN(null)“ anstelle von „WHERE Foo IN()“ erzeugt werden.
                 string commandText = parameterValue == null || !parameterValue.Any() ? "NULL" : string.Join(", ", parameterValue);
+=======
+                string commandText = parameterValue == null || !parameterValue.Any() ? "null" : string.Join(", ", parameterValue);
+>>>>>>> efa7923271d825cf1c045bad10708386b3840c11
                 this.builder.Append(text.Replace(parameterName, commandText));
             }
         }
